@@ -271,8 +271,8 @@
 
       <p class="muted">
         <small>
-          Login awal setelah setup: owner / 111
-          Segera ubah password contoh sebelum aplikasi digunakan.
+          Akun awal: owner / 111, admin / 222, dapur / 333.
+          Ganti password di objek USERS pada Code.gs sebelum digunakan.
         </small>
       </p>
     </section>
@@ -311,7 +311,7 @@
        1. KONFIGURASI
     ================================================== */
 
-    const API = "https://script.google.com/macros/s/AKfycbxaKorbDhTjPBPbFT5Ktti3DSa_wFnYF7ncLZIIEHOkWs8s0_bGssGmufKEl5hxu0z1/exec";
+    const API = "https://script.google.com/macros/s/AKfycbyKAMtfTXzKHQD2JeNjhdGY-wgJbOegG3bHaLQUT5okbi9wPGE8VPXI0El18WTbG5B1/exec";
 
     let token = "";
     let me = null;
@@ -319,7 +319,7 @@
     let menuCache = [];
 
     const roles = {
-      catalog: ["Owner", "Admin", "Dapur"],
+      catalog: ["Owner", "Admin"],
       dashboard: ["Owner"],
       orders: ["Owner", "Admin", "Dapur"],
       kitchen: ["Owner", "Dapur"],
