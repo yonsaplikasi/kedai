@@ -1,0 +1,1459 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>Kedai Kopi - Admin</title>
+
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --card: #ffffff;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --brand: #6f4e37;
+      --line: #e2e8f0;
+      --ok: #16845b;
+      --bad: #b42318;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.45 Arial, sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--brand);
+      color: white;
+      border: 0;
+      font-weight: 700;
+    }
+
+    button.secondary {
+      background: #e8e1dc;
+      color: #3d2b1f;
+    }
+
+    button.danger {
+      background: #b42318;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin: 12px 0;
+      box-shadow: 0 2px 8px #0f172a08;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+      );
+      gap: 12px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .row > * {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 12px;
+    }
+
+    small,
+    .muted {
+      color: var(--muted);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow: auto;
+      margin: 14px 0;
+    }
+
+    .tabs button {
+      white-space: nowrap;
+    }
+
+    .tabs button.active {
+      background: #2f241e;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 650px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+    }
+
+    .tablewrap {
+      overflow: auto;
+    }
+
+    .stat {
+      font-size: 25px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #f1f5f9;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .msg {
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      background: #e8f5ee;
+      color: #14532d;
+    }
+
+    .err {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .navhead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      background: white;
+    }
+
+    textarea {
+      min-height: 70px;
+    }
+
+    form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .menurow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .wrap {
+        padding: 10px;
+      }
+
+      .menurow {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs button {
+        padding: 9px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- LOGIN -->
+    <section
+      id="login"
+      class="card"
+      style="max-width: 420px; margin: 7vh auto;"
+    >
+      <h1>☕ Kedai Kopi</h1>
+
+      <p class="muted">
+        Masuk ke panel karyawan
+      </p>
+
+      <div id="loginMsg"></div>
+
+      <form id="loginForm">
+        <div>
+          <label>Username</label>
+
+          <input
+            id="username"
+            autocomplete="username"
+            required
+          >
+        </div>
+
+        <div>
+          <label>Password</label>
+
+          <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button>Login</button>
+      </form>
+
+      <p class="muted">
+        <small>
+          Login awal setelah setup: owner / GantiPassword123!
+          Segera ubah password contoh sebelum aplikasi digunakan.
+        </small>
+      </p>
+    </section>
+
+    <!-- APLIKASI -->
+    <section id="app" class="hidden">
+
+      <header class="navhead">
+        <div>
+          <h1 id="brand">☕ Panel Kedai</h1>
+          <small id="who"></small>
+        </div>
+
+        <button
+          class="secondary"
+          onclick="logout()"
+        >
+          Keluar
+        </button>
+      </header>
+
+      <nav
+        class="tabs"
+        id="tabs"
+      ></nav>
+
+      <div id="notice"></div>
+
+      <main id="content"></main>
+
+    </section>
+  </div>
+
+  <script>
+    /* ==================================================
+       1. KONFIGURASI
+    ================================================== */
+
+    const API = "PASTE_URL_WEB_APP_DI_SINI";
+
+    let token = "";
+    let me = null;
+    let tab = "orders";
+    let menuCache = [];
+
+    const roles = {
+      catalog: ["Owner", "Admin", "Dapur"],
+      dashboard: ["Owner"],
+      orders: ["Owner", "Admin", "Dapur"],
+      kitchen: ["Owner", "Dapur"],
+      cashier: ["Owner", "Admin"],
+      shopping: ["Owner", "Admin"],
+      requests: ["Owner", "Admin", "Dapur"]
+    };
+
+    const labels = {
+      catalog: "Katalog",
+      dashboard: "Dashboard",
+      orders: "Pesanan",
+      kitchen: "Dapur",
+      cashier: "Kasir",
+      shopping: "Belanja",
+      requests: "Pengajuan Belanja"
+    };
+
+
+    /* ==================================================
+       2. KOMUNIKASI API
+    ================================================== */
+
+    function callGet(action, params = {}) {
+      return new Promise((resolve, reject) => {
+        if (!API.startsWith("https://")) {
+          return reject(
+            Error("Isi URL Apps Script di variabel API.")
+          );
+        }
+
+        const cb =
+          "cb_" + Math.random().toString(36).slice(2);
+
+        const script = document.createElement("script");
+
+        const timer = setTimeout(() => {
+          cleanup();
+
+          reject(
+            Error("API timeout. Periksa URL dan deployment.")
+          );
+        }, 15000);
+
+        function cleanup() {
+          clearTimeout(timer);
+          delete window[cb];
+          script.remove();
+        }
+
+        window[cb] = data => {
+          cleanup();
+
+          data.ok
+            ? resolve(data)
+            : reject(Error(data.error || "Permintaan gagal"));
+        };
+
+        script.onerror = () => {
+          cleanup();
+
+          reject(
+            Error("Gagal menghubungi API")
+          );
+        };
+
+        script.src =
+          API +
+          "?action=" + encodeURIComponent(action) +
+          "&callback=" + cb +
+          "&" + new URLSearchParams({
+            ...params,
+            token
+          });
+
+        document.body.appendChild(script);
+      });
+    }
+
+
+    function callPost(data) {
+      if (!API.startsWith("https://")) {
+        throw Error("Isi URL Apps Script di variabel API.");
+      }
+
+      return fetch(API, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify({
+          ...data,
+          token
+        })
+      });
+    }
+
+
+    function uid() {
+      return "t_" +
+        crypto.getRandomValues(new Uint32Array(4)).join("_");
+    }
+
+
+    /* ==================================================
+       3. UTILITAS TAMPILAN
+    ================================================== */
+
+    function msg(text, err = false) {
+      document.getElementById("notice").innerHTML =
+        '<div class="msg ' +
+        (err ? "err" : "") +
+        '">' +
+        esc(text) +
+        "</div>";
+
+      setTimeout(() => {
+        document.getElementById("notice").innerHTML = "";
+      }, 5000);
+    }
+
+
+    function esc(value) {
+      return String(value ?? "").replace(
+        /[&<>"']/g,
+        char => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        })[char]
+      );
+    }
+
+
+    function money(value) {
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+      }).format(Number(value) || 0);
+    }
+
+
+    function stat(title, value) {
+      return `
+        <div class="card">
+          <small>${title}</small>
+          <div class="stat">${value}</div>
+        </div>
+      `;
+    }
+
+
+    /* ==================================================
+       4. LOGIN DAN LOGOUT
+    ================================================== */
+
+    document.getElementById("loginForm").onsubmit =
+      async event => {
+        event.preventDefault();
+
+        const sessionToken = uid();
+
+        try {
+          await fetch(API, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+              action: "login",
+              username: document.getElementById("username").value,
+              password: document.getElementById("password").value,
+              token: sessionToken
+            })
+          });
+
+          token = sessionToken;
+
+          let success = false;
+
+          for (let i = 0; i < 5; i++) {
+            await new Promise(resolve =>
+              setTimeout(resolve, 500)
+            );
+
+            try {
+              const result = await callGet("loginCheck");
+
+              if (result.ok) {
+                success = true;
+                me = result.user;
+                break;
+              }
+            } catch (error) {
+              // Periksa sesi kembali pada percobaan berikutnya.
+            }
+          }
+
+          if (!success) {
+            throw Error(
+              "Login gagal. Periksa username/password dan URL backend."
+            );
+          }
+
+          sessionStorage.setItem("kafeToken", token);
+
+          await showApp();
+
+        } catch (error) {
+          document.getElementById("loginMsg").innerHTML =
+            '<div class="msg err">' +
+            esc(error.message) +
+            "</div>";
+        }
+      };
+
+
+    async function showApp() {
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("app").classList.remove("hidden");
+
+      document.getElementById("who").textContent =
+        me.name + " • " + me.role;
+
+      const result = await callGet("settings");
+
+      document.getElementById("brand").textContent =
+        "☕ " + (result.settings.NamaKafe || "Panel Kedai");
+
+      renderTabs();
+
+      openTab(
+        roles.dashboard.includes(me.role)
+          ? "dashboard"
+          : "orders"
+      );
+    }
+
+
+    function logout() {
+      sessionStorage.removeItem("kafeToken");
+
+      token = "";
+      me = null;
+
+      document.getElementById("app").classList.add("hidden");
+      document.getElementById("login").classList.remove("hidden");
+    }
+
+
+    /* ==================================================
+       5. NAVIGASI
+    ================================================== */
+
+    function renderTabs() {
+      document.getElementById("tabs").innerHTML =
+        Object.keys(labels)
+          .filter(key => roles[key].includes(me.role))
+          .map(key => `
+            <button
+              class="${key === tab ? "active" : ""}"
+              onclick="openTab('${key}')"
+            >
+              ${labels[key]}
+            </button>
+          `)
+          .join("");
+    }
+
+
+    function openTab(key) {
+      tab = key;
+
+      renderTabs();
+
+      document.getElementById("content").innerHTML =
+        '<div class="card">Memuat data…</div>';
+
+      const pages = {
+        catalog: catalogPage,
+        dashboard: dashboardPage,
+        orders: ordersPage,
+        kitchen: kitchenPage,
+        cashier: cashierPage,
+        shopping: shoppingPage,
+        requests: requestsPage
+      };
+
+      if (!pages[key] || !roles[key].includes(me.role)) {
+        document.getElementById("content").innerHTML =
+          '<div class="card msg err">Akses tidak diizinkan.</div>';
+
+        return;
+      }
+
+      pages[key]().catch(error => {
+        document.getElementById("content").innerHTML =
+          '<div class="card msg err">' +
+          esc(error.message) +
+          "</div>";
+      });
+    }
+
+
+    /* ==================================================
+       6. KATALOG MENU
+    ================================================== */
+
+    async function catalogPage() {
+      const result = await callGet("menu");
+
+      menuCache = result.menu;
+
+      document.getElementById("content").innerHTML = `
+        <div class="card">
+          <h2>Katalog Menu</h2>
+
+          <form id="menuForm" class="menurow">
+            <input
+              name="id"
+              placeholder="ID menu (kosongkan untuk baru)"
+            >
+
+            <input
+              name="name"
+              placeholder="Nama menu"
+              required
+            >
+
+            <input
+              name="category"
+              placeholder="Kategori"
+            >
+
+            <input
+              name="price"
+              type="number"
+              placeholder="Harga jual"
+              required
+            >
+
+            <input
+              name="photo"
+              placeholder="URL foto"
+            >
+
+            <input
+              name="description"
+              placeholder="Deskripsi"
+            >
+
+            <button>Simpan menu</button>
+          </form>
+        </div>
+
+        <div class="card tablewrap">
+          <table>
+            <tr>
+              <th>Nama</th>
+              <th>Kategori</th>
+              <th>Harga</th>
+              <th>Deskripsi</th>
+            </tr>
+
+            ${result.menu.map(menu => `
+              <tr>
+                <td>${esc(menu.Nama)}</td>
+                <td>${esc(menu.Kategori)}</td>
+                <td>${money(menu.Harga)}</td>
+                <td>${esc(menu.Deskripsi)}</td>
+              </tr>
+            `).join("")}
+          </table>
+        </div>
+      `;
+
+      document.getElementById("menuForm").onsubmit =
+        async event => {
+          event.preventDefault();
+
+          const form = new FormData(event.currentTarget);
+
+          await callPost({
+            action: "saveMenu",
+            id: form.get("id"),
+            name: form.get("name"),
+            category: form.get("category"),
+            price: form.get("price"),
+            photo: form.get("photo"),
+            description: form.get("description")
+          });
+
+          msg(
+            "Permintaan simpan menu dikirim. Muat ulang beberapa saat lagi."
+          );
+
+          setTimeout(() => openTab("catalog"), 1200);
+        };
+    }
+
+
+    /* ==================================================
+       7. DASHBOARD
+    ================================================== */
+
+    async function dashboardPage() {
+      const result = await callGet("dashboard");
+      const data = result.dashboard;
+
+      document.getElementById("content").innerHTML = `
+        <div class="card">
+          <h2>Dashboard Penjualan</h2>
+
+          <p class="muted">
+            Periode ${esc(data.from.slice(0, 10))}
+            s/d ${esc(data.to.slice(0, 10))}
+          </p>
+
+          <div class="grid">
+            ${stat("Pendapatan", money(data.revenue))}
+            ${stat("Porsi terjual", data.portions)}
+            ${stat("Pembelian bahan", money(data.purchases))}
+            ${stat("Biaya lain", money(data.expenses))}
+            ${stat("Sisa kas operasional", money(data.cashDifference))}
+            ${stat("Order selesai/dibayar", data.orders)}
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Menu terlaris</h3>
+
+          <div class="tablewrap">
+            <table>
+              <tr>
+                <th>Menu</th>
+                <th>Jumlah</th>
+              </tr>
+
+              ${data.topMenus.map(item => `
+                <tr>
+                  <td>${esc(item.name)}</td>
+                  <td>${item.qty}</td>
+                </tr>
+              `).join("")}
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+
+    /* ==================================================
+       8. PESANAN DAN DAPUR
+    ================================================== */
+
+    async function ordersPage() {
+      const result = await callGet("orders");
+
+      document.getElementById("content").innerHTML = `
+        <div class="card">
+          <h2>Pesanan Pelanggan</h2>
+
+          <button
+            class="secondary"
+            onclick="openTab('orders')"
+          >
+            Muat ulang
+          </button>
+        </div>
+
+        ${orderTable(result.orders, true)}
+      `;
+    }
+
+
+    async function kitchenPage() {
+      const result = await callGet("kitchenOrders");
+
+      document.getElementById("content").innerHTML = `
+        <div class="card">
+          <h2>Antrean Dapur</h2>
+
+          <button
+            class="secondary"
+            onclick="openTab('kitchen')"
+          >
+            Muat ulang
+          </button>
+        </div>
+
+        ${orderTable(result.orders, false)}
+      `;
+    }
+
+
+    function orderTable(list, admin) {
+      return `
+        <div class="card tablewrap">
+          <table>
+            <tr>
+              <th>Order</th>
+              <th>Waktu</th>
+              <th>Pelanggan</th>
+              <th>Meja</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+
+            ${list.map(order => `
+              <tr>
+                <td>${esc(order.OrderID)}</td>
+
+                <td>
+                  ${esc(
+                    String(order.Waktu)
+                      .slice(0, 16)
+                      .replace("T", " ")
+                  )}
+                </td>
+
+                <td>
+                  ${esc(order.NamaPelanggan)}
+                  <br>
+                  <small>${esc(order.NoHP)}</small>
+                </td>
+
+                <td>${esc(order.Meja)}</td>
+                <td>${money(order.Total)}</td>
+
+                <td>
+                  <span class="status">
+                    ${esc(order.Status)}
+                  </span>
+                </td>
+
+                <td>
+                  <select id="s_${esc(order.OrderID)}">
+                    <option>Menunggu</option>
+                    <option>Diproses</option>
+                    <option>Selesai</option>
+                    <option>Dibatalkan</option>
+                  </select>
+
+                  <button
+                    onclick="setOrder(
+                      '${esc(order.OrderID)}',
+                      document.getElementById('s_${esc(order.OrderID)}').value
+                    )"
+                  >
+                    Simpan
+                  </button>
+                </td>
+              </tr>
+            `).join("")}
+          </table>
+        </div>
+      `;
+    }
+
+
+    async function setOrder(id, status) {
+      await callPost({
+        action: "updateOrder",
+        id,
+        status
+      });
+
+      msg(
+        "Perubahan status dikirim. Muat ulang untuk memeriksa hasil."
+      );
+    }
+
+
+    /* ==================================================
+       9. KASIR
+    ================================================== */
+
+    async function cashierPage() {
+      const result = await callGet("orders");
+
+      const list = result.orders.filter(
+        order =>
+          !["Dibayar", "Dibatalkan"].includes(order.Status)
+      );
+
+      document.getElementById("content").innerHTML = `
+        <div class="card">
+          <h2>Kasir</h2>
+
+          <p class="muted">
+            Pilih pesanan, metode, lalu catat pembayaran penuh.
+          </p>
+        </div>
+
+        <div class="card tablewrap">
+          <table>
+            <tr>
+              <th>Order</th>
+              <th>Pelanggan</th>
+              <th>Meja</th>
+              <th>Total</th>
+              <th>Metode</th>
+              <th>Aksi</th>
+            </tr>
+
+            ${list.map(order => `
+              <tr>
+                <td>${esc(order.OrderID)}</td>
+                <td>${esc(order.NamaPelanggan)}</td>
+                <td>${esc(order.Meja)}</td>
+                <td>${money(order.Total)}</td>
+
+                <td>
+                  <select id="m_${esc(order.OrderID)}">
+                    <option>Tunai</option>
+                    <option>QRIS</option>
+                    <option>Transfer</option>
+                    <option>Kartu</option>
+                  </select>
+                </td>
+
+                <td>
+                  <button
+                    onclick="pay(
+                      '${esc(order.OrderID)}',
+                      ${Number(order.Total) || 0}
+                    )"
+                  >
+                    Bayar
+                  </button>
+                </td>
+              </tr>
+            `).join("")}
+          </table>
+        </div>
+      `;
+    }
+
+
+    async function pay(id, total) {
+      if (!confirm("Catat pembayaran " + money(total) + "?")) {
+        return;
+      }
+
+      const method = document.getElementById("m_" + id).value;
+
+      await callPost({
+        action: "payOrder",
+        id,
+        amount: total,
+        method
+      });
+
+      msg(
+        "Pembayaran dikirim. Muat ulang beberapa saat lagi."
+      );
+    }
+
+
+    /* ==================================================
+       10. BELANJA DAN BIAYA OPERASIONAL
+    ================================================== */
+
+    async function shoppingPage() {
+      const [purchaseResult, expenseResult, requestResult] =
+        await Promise.all([
+          callGet("purchases"),
+          callGet("expenses"),
+          callGet("requests")
+        ]);
+
+      document.getElementById("content").innerHTML = `
+        <div class="card">
+          <h2>Belanja & Biaya Operasional</h2>
+
+          <div class="grid">
+            <div>
+              <h3>Catat pembelian bahan</h3>
+
+              <form id="purchaseForm">
+                <input
+                  name="name"
+                  placeholder="Nama bahan"
+                  required
+                >
+
+                <div class="row">
+                  <input
+                    name="qty"
+                    type="number"
+                    step="any"
+                    placeholder="Jumlah"
+                    required
+                  >
+
+                  <input
+                    name="unit"
+                    placeholder="Satuan: kg/liter/pcs"
+                    required
+                  >
+                </div>
+
+                <div class="row">
+                  <input
+                    name="unitPrice"
+                    type="number"
+                    placeholder="Harga satuan"
+                    required
+                  >
+
+                  <input
+                    name="supplier"
+                    placeholder="Pemasok (opsional)"
+                  >
+                </div>
+
+                <input name="date" type="date">
+                <input name="note" placeholder="Catatan">
+
+                <button>Simpan pembelian</button>
+              </form>
+            </div>
+
+            <div>
+              <h3>Catat biaya lain</h3>
+
+              <form id="expenseForm">
+                <input
+                  name="category"
+                  placeholder="Kategori: listrik/gas/gaji/sewa"
+                  required
+                >
+
+                <input
+                  name="description"
+                  placeholder="Keterangan"
+                >
+
+                <input
+                  name="amount"
+                  type="number"
+                  placeholder="Jumlah rupiah"
+                  required
+                >
+
+                <input name="date" type="date">
+
+                <button>Simpan biaya</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Pengajuan Belanja Dapur</h3>
+
+          <div class="tablewrap">
+            <table>
+              <tr>
+                <th>Bahan</th>
+                <th>Status stok</th>
+                <th>Usulan</th>
+                <th>Status pengajuan</th>
+                <th>Persetujuan</th>
+              </tr>
+
+              ${requestResult.requests.map(item => `
+                <tr>
+                  <td>${esc(item.BahanBaku)}</td>
+                  <td>${esc(item.KetStok)}</td>
+
+                  <td>
+                    ${esc(item.UsulanJumlah)}
+                    ${esc(item.Satuan)}
+                  </td>
+
+                  <td>${esc(item.Status)}</td>
+
+                  <td>
+                    <button
+                      onclick="review(
+                        '${esc(item.PengajuanID)}',
+                        'Disetujui',
+                        ${Number(item.UsulanJumlah) || 0}
+                      )"
+                    >
+                      Setujui
+                    </button>
+
+                    <button
+                      class="danger"
+                      onclick="review(
+                        '${esc(item.PengajuanID)}',
+                        'Ditolak',
+                        0
+                      )"
+                    >
+                      Tolak
+                    </button>
+                  </td>
+                </tr>
+              `).join("")}
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Riwayat pembelian terbaru</h3>
+
+          <div class="tablewrap">
+            <table>
+              <tr>
+                <th>Tanggal</th>
+                <th>Bahan</th>
+                <th>Jumlah</th>
+                <th>Total</th>
+              </tr>
+
+              ${purchaseResult.purchases.slice(0, 30).map(item => `
+                <tr>
+                  <td>${esc(String(item.Tanggal).slice(0, 10))}</td>
+                  <td>${esc(item.BahanBaku)}</td>
+
+                  <td>
+                    ${esc(item.Jumlah)}
+                    ${esc(item.Satuan)}
+                  </td>
+
+                  <td>${money(item.Total)}</td>
+                </tr>
+              `).join("")}
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Riwayat biaya operasional</h3>
+
+          <div class="tablewrap">
+            <table>
+              <tr>
+                <th>Tanggal</th>
+                <th>Kategori</th>
+                <th>Keterangan</th>
+                <th>Jumlah</th>
+              </tr>
+
+              ${expenseResult.expenses.slice(0, 30).map(item => `
+                <tr>
+                  <td>${esc(String(item.Tanggal).slice(0, 10))}</td>
+                  <td>${esc(item.Kategori)}</td>
+                  <td>${esc(item.Keterangan)}</td>
+                  <td>${money(item.Jumlah)}</td>
+                </tr>
+              `).join("")}
+            </table>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("purchaseForm").onsubmit =
+        async event => {
+          event.preventDefault();
+
+          const form = new FormData(event.currentTarget);
+
+          await callPost({
+            action: "savePurchase",
+            name: form.get("name"),
+            qty: form.get("qty"),
+            unit: form.get("unit"),
+            unitPrice: form.get("unitPrice"),
+            supplier: form.get("supplier"),
+            date: form.get("date"),
+            note: form.get("note")
+          });
+
+          msg("Pembelian dikirim.");
+
+          setTimeout(() => openTab("shopping"), 1000);
+        };
+
+      document.getElementById("expenseForm").onsubmit =
+        async event => {
+          event.preventDefault();
+
+          const form = new FormData(event.currentTarget);
+
+          await callPost({
+            action: "saveExpense",
+            category: form.get("category"),
+            description: form.get("description"),
+            amount: form.get("amount"),
+            date: form.get("date")
+          });
+
+          msg("Biaya dikirim.");
+
+          setTimeout(() => openTab("shopping"), 1000);
+        };
+    }
+
+
+    /* ==================================================
+       11. PENGAJUAN BELANJA
+    ================================================== */
+
+    async function requestsPage() {
+      const [ingredientResult, requestResult] =
+        await Promise.all([
+          callGet("ingredients"),
+          callGet("requests")
+        ]);
+
+      const ingredients = ingredientResult.ingredients;
+
+      document.getElementById("content").innerHTML = `
+        <div class="card">
+          <h2>Pengajuan Belanja Bahan Baku</h2>
+
+          <p class="muted">
+            Pilih status stok, lalu isi jumlah yang diusulkan.
+            Status Tersedia otomatis mengusulkan 0.
+          </p>
+
+          <form id="requestForm">
+            <div class="tablewrap">
+              <table>
+                <tr>
+                  <th>No.</th>
+                  <th>Bahan Baku</th>
+                  <th>Ket. Stok</th>
+                  <th>Usulan Belanja</th>
+                  <th>Catatan</th>
+                </tr>
+
+                ${ingredients.map((item, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+
+                    <td>${esc(item.NamaBahan)}</td>
+
+                    <td>
+                      <select
+                        name="status_${index}"
+                        onchange="
+                          if (this.value === 'Tersedia') {
+                            document.getElementById('qty_${index}').value = 0;
+                          }
+                        "
+                      >
+                        <option>Tersedia</option>
+                        <option>Hampir Habis</option>
+                        <option>Habis</option>
+                      </select>
+                    </td>
+
+                    <td>
+                      <div class="row">
+                        <input
+                          id="qty_${index}"
+                          name="qty_${index}"
+                          type="number"
+                          min="0"
+                          step="any"
+                          value="0"
+                        >
+
+                        <span>${esc(item.Satuan)}</span>
+                      </div>
+                    </td>
+
+                    <td>
+                      <input
+                        name="note_${index}"
+                        placeholder="Opsional"
+                      >
+                    </td>
+                  </tr>
+                `).join("")}
+              </table>
+            </div>
+
+            <button>Kirim Pengajuan</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3>Status Pengajuan</h3>
+
+          <div class="tablewrap">
+            <table>
+              <tr>
+                <th>Bahan</th>
+                <th>Stok</th>
+                <th>Usulan</th>
+                <th>Status</th>
+                <th>Persetujuan</th>
+              </tr>
+
+              ${requestResult.requests.map(item => `
+                <tr>
+                  <td>${esc(item.BahanBaku)}</td>
+                  <td>${esc(item.KetStok)}</td>
+
+                  <td>
+                    ${esc(item.UsulanJumlah)}
+                    ${esc(item.Satuan)}
+                  </td>
+
+                  <td>${esc(item.Status)}</td>
+
+                  <td>
+                    ${
+                      ["Owner", "Admin"].includes(me.role) &&
+                      item.Status === "Diajukan"
+                        ? `
+                          <button
+                            onclick="review(
+                              '${esc(item.PengajuanID)}',
+                              'Disetujui',
+                              ${Number(item.UsulanJumlah) || 0}
+                            )"
+                          >
+                            Setujui
+                          </button>
+
+                          <button
+                            class="danger"
+                            onclick="review(
+                              '${esc(item.PengajuanID)}',
+                              'Ditolak',
+                              0
+                            )"
+                          >
+                            Tolak
+                          </button>
+                        `
+                        : esc(item.DisetujuiOleh || "—")
+                    }
+                  </td>
+                </tr>
+              `).join("")}
+            </table>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("requestForm").onsubmit =
+        async event => {
+          event.preventDefault();
+
+          const form = event.currentTarget;
+
+          const items = ingredients
+            .map((item, index) => ({
+              name: item.NamaBahan,
+              status: form.elements["status_" + index].value,
+              qty: form.elements["qty_" + index].value,
+              unit: item.Satuan,
+              note: form.elements["note_" + index].value
+            }))
+            .filter(item =>
+              item.status !== "Tersedia" ||
+              Number(item.qty) > 0
+            );
+
+          if (!items.length) {
+            msg("Tidak ada bahan yang diajukan.", true);
+            return;
+          }
+
+          await callPost({
+            action: "submitPurchaseRequest",
+            items
+          });
+
+          msg(
+            "Pengajuan dikirim. Muat ulang beberapa saat lagi."
+          );
+
+          setTimeout(() => openTab("requests"), 1000);
+        };
+    }
+
+
+    /* ==================================================
+       12. TINJAU PENGAJUAN
+    ================================================== */
+
+    async function review(id, status, approvedQty) {
+      await callPost({
+        action: "reviewRequest",
+        id,
+        status,
+        approvedQty
+      });
+
+      msg("Keputusan pengajuan dikirim.");
+
+      setTimeout(() => openTab("shopping"), 1000);
+    }
+
+
+    /* ==================================================
+       13. PEMULIHAN SESI
+    ================================================== */
+
+    (async () => {
+      const saved = sessionStorage.getItem("kafeToken");
+
+      if (saved) {
+        token = saved;
+
+        try {
+          const result = await callGet("loginCheck");
+
+          if (result.ok) {
+            me = result.user;
+            await showApp();
+          }
+        } catch (error) {
+          sessionStorage.removeItem("kafeToken");
+          token = "";
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
